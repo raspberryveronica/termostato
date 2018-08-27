@@ -1,0 +1,12 @@
+			<table class="data_table">
+                                <caption>Ultima rilevazione:</caption>
+                                {% for row in results %}
+                                <tr class="dati"><th class="dati2">Data:</th><td class="dati2">{{ row[0] }}</td></tr>
+                                <tr class="dati"><th class="dati2">Ora:</th><td class="dati2">{{ row[1] }}</td></tr>
+                                <tr class="dati"><th class="dati2">Temperatura:</th><td class="dati2">{{ row[3] }}</td></tr>
+                                <tr class="dati"><th class="dati2">Termostato:</th><td class="dati2">{{ row[4] }}</td></tr>
+                                <tr class="dati"><th class="dati2">Pressione:</th><td class="dati2">{{ row[5] }}</td></tr>
+                                <tr class="dati"><th class="dati2">Altitudine:</th><td class="dati2">{{ row[6] }}</td></tr>
+                                {% endfor %}
+                        </table>
+

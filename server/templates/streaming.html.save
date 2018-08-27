@@ -1,0 +1,53 @@
+<link rel="stylesheet" href="/static/style_streaming.css" type="text/css">
+<html>
+<head>
+<script>src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<title>Video Streaming</title>
+</head>
+<body>
+	<ul>
+		<li><a href='http://192.168.0.47/pagina.php' target=”_blank”>Termostato</a></li>
+		<li><a href="">Pagina1</a></li>
+		<li  style="float:right" ><a class="active" href='/logout'>Logout</a></li>
+	</ul> 
+
+		<table class="all_table">
+			<tr><td class="video">
+				<h1>Video Streaming</h1>
+				<img src="{{ url_for('video_feed') }}">
+			</td>
+			<td>
+				<table class="data_table">
+					{% for row in results %}
+					<tr class="dati"><th class="dati2">Data:</th><td class="dati2">{{ row[0] }}</td></tr>
+       					<tr class="dati"><th class="dati2">Ora:</th><td class="dati2">{{ row[1] }}</td></tr>
+       					<tr class="dati"><th class="dati2">Temperatura:</th><td class="dati2">{{ row[3] }}</td></tr>
+					<tr class="dati"><th class="dati2">Termostato:</th><td class="dati2">{{ row[4] }}</td></tr>
+					<tr class="dati"><th class="dati2">Pressione:</th><td class="dati2">{{ row[5] }}</td></tr>
+					<tr class="dati"><th class="dati2">Altitudine:</th><td class="dati2">{{ row[6] }}</td></tr>
+					{% endfor %}
+				</table>
+				{% for row in results %}
+				<div>Data:&#9 {{ row[0] }}</div>
+				{% endfor %}
+			</td></tr>
+		</table>
+
+
+<td style='text-align: center;' value"click"></td>
+
+<script>
+function translate(sourceLang, destLang, sourceId, destId, loadingId) {
+    $(destId).hide();
+    $(loadingId).show();
+    $.post('/prova', {
+    });
+}
+</script>
+			
+
+
+
+</body>
+</html>
+

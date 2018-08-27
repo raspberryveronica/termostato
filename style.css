@@ -1,0 +1,111 @@
+.ac-color
+{
+	background-color:#ff4040 !important;
+}
+
+
+#slider .rs-handle
+{
+
+  background-image: url('sun.png');
+  background-size: 100%;
+}
+
+.rs-handle {
+    background-color: #f7ff70b3;
+}
+
+.rs-bar .rs-seperator
+{
+    display: none;
+}
+
+#slider
+{
+        margin-top: 8%;
+}
+
+#js_temp
+{
+    margin-top: -40px;
+}
+#js_termostato
+{
+        margin-top:22px;
+}
+#termometro 
+{
+    width: 14%;
+    margin-left: -23px;
+    margin-bottom: -4px;
+}
+.rs-tooltip, .rs-tooltip-text 
+{
+margin-top: -57px !important;
+margin-left: -184px !important;
+}
+#data 
+{
+    margin-right: 52px;
+}
+.button, .chiudi {
+  display: inline-block;
+  border-radius: 4px;
+  background-color: #27aafc;
+  border: none;
+  color: white;
+  text-align: center;
+  font-size: 22px;
+  padding: 2px;
+  width: 108px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+thead, tfoot
+{
+	background-color: #27aafc;
+	color:white;
+}
+.button span , .chiudi span{
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span{
+  padding-right: 25px;
+  color:white;
+}
+
+.button:hover span:after, .chiudi:hover span:after {
+  opacity: 1;
+  right: 0;
+  color:white;	
+
+}
+.button:hover, .chiudi:hover
+{
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+.chiudi
+{
+	float:right;
+}
+.blue {
+    background-color: #ff0000;
+}
+.bottoni 
+{
+	display: inline-block !important;
+}

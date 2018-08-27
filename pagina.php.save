@@ -1,0 +1,300 @@
+<?php
+/*
+ *
+ *Autore: 		Veronica Smacchia
+ *Descrizione: 		collegarsi a 192.168.0.47/html/pagina.php, rileva la temperatura, possibilità
+ *	       		di impostare il termostato
+ *File coinvolti:	caricamento.py
+ *Data:			04/07/2018
+ *
+*/?>
+
+
+<?php /*CIRCLE RANGE SLIDER */ ?>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.js"></script>
+<link href="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<!--<script type="text/javascript"  src="script.js"></script>-->
+
+<div id="blocco" align="center">
+	<div id="slider"></div>
+	<div class="bottoni">
+		<form method="post">
+			<button class="button" name="Rileva">
+                		<span>Rileva</span>
+			</button>
+		</form>
+	</div>
+
+	<button onclick="myFunction()" class="button" name="Grafico">
+                <span>Grafico</span>
+        </button>
+</div>
+<style>
+<?php include 'style.css'; ?>
+</style>
+<?php
+//BLOCCO DATI DATABASE
+$host = "localhost";
+$user = "monitor";
+$password = "password";
+$db = "temps";
+
+$valore_js=0;
+//CONNESSIONE AL DATABASE
+$connessione = new mysqli($host, $user, $password, $db);
+if ($connessione->connect_errno)
+{
+    echo "Connessione fallita: ". $connessione->connect_error . ".";
+    exit();
+}
+else
+{
+	//echo "sei connesso";
+}
+//ISSET PER FORM BOTTONE PYTHON
+if(isset($_POST['Rileva']))
+{
+        exec("sudo python caricamento.py");
+}
+?>
+
+<br> <br>
+<?php
+if (!$result = $connessione->query("SELECT * FROM tempdat"))
+{
+	echo "Errore della query: " . $connessione->error . ".";
+	exit();
+}
+else
+{
+	if($result->num_rows > 0)
+	{
+   		while($row = $result->fetch_array(MYSQLI_ASSOC))
+    		{
+			$data=$row['tdate'];
+		        $ora=$row['ttime'];
+			$zona=$row['zone'];
+        		$temperatura=$row['temperature'];
+			$termostato=$row['termostato'];
+			$pressione=$row['pressione'];
+			$altitudine=$row['altitudine'];
+		}
+
+		//QUERY PER COSTRUZIONE DATI GRAFICO
+		if(!$result2 = $connessione->query("SELECT MAX(temperature)as maxtemp,tdate,termostato FROM tempdat WHERE tdate BETWEEN DATE_SUB(NOW(), INTERVAL 20 DAY) AND NOW() GROUP BY tdate ORDER BY tdate ASC"))
+		{
+			echo "Errore della query: " . $connessione->error . ".";
+		        exit();
+		}
+		else
+		{
+			while($row = $result2->fetch_array(MYSQLI_ASSOC))
+                	{
+				$array[]=$row['maxtemp'];
+				$datej[]=$row['tdate'];
+				$termostatoj[]=$row['termostato'];
+			}
+			//print_r ($array);
+			//print_r ($termostatoj);
+		}
+
+		//CONTROLLO PER IMPOSTARE IL TERMOSTATO
+		if($_GET['imposta']== "" )
+		{
+                	$vinserito=$termostato;
+        	}
+        	else
+        	{
+			$vinserito=$_GET['imposta'];
+        	}
+
+		$valore_php=$_GET['log'];
+		if($valore_php!="")
+		{
+			$vinserito=$valore_php;
+
+		}
+
+		//NEL CASO IN CUI L'IF SIA VERO VERRà INSERITO IL NUOVO TERMOSTATO E RILETTO IL TUTTO
+		if($vinserito!=$termostato)
+		{
+			$result=$connessione->query("INSERT INTO tempdat(tdate,ttime,zone,temperature,termostato,pressione,altitudine) VALUES(CURRENT_DATE(),CURRENT_TIME(),'$zona','$temperatura','$vinserito','$pressione','$altitudine')");
+			if (!$result= $connessione->query("SELECT * FROM tempdat"))
+			{
+        			echo "Errore della query: " . $connessione->error . ".";
+        			exit();
+			}
+			else
+			{
+				if($result->num_rows > 0)
+        			{
+					while($row=$result->fetch_array(MYSQLI_ASSOC))
+        	        		{
+ 						$data=$row['tdate'];
+       						$ora=$row['ttime'];
+       						$zona=$row['zone'];
+       						$temperatura=$row['temperature'];
+						$termostato=$row['termostato'];
+						$pressione=$row['pressione'];
+						$altitudine=$row['altitudine'];
+	    				}
+				}
+			}
+
+		}
+		//echo "La temperatura attuale è: " . round($temperatura,1) ."<br>". "Il termostato è impostato a: ".$termostato . "°". "<br>";
+		//echo "Pressione: ". $pressione . " altitudine: " . $altitudine;
+		//STAMPA DELLO STATO DEL TERMOSTATO
+		if($temperatura>=$termostato)
+		{
+			exec("sudo python accendi.py");
+			//echo "<br> Il termostato è acceso <br>";
+			$stato="Il termostato è acceso";
+			$vstato=1;
+		}
+		else
+		{
+			exec("sudo python spegni.py");
+			//echo "<br> Il termostato è spento <br>";
+			$stato="Il termostato è spento";
+			$vstato=0;
+		}
+	}
+	$result->close();
+}
+//CHIUSURA DELLA CONNESSIONE
+$connessione->close();
+?>
+</div>
+
+<script>
+$("#slider").roundSlider({
+	sliderType: "min-range",
+	editableTooltip: false,
+	radius: 200,
+	width: 20,
+	handleSize: "+40",
+	value: <?php echo $termostato ?>,
+	//handleShape: "/var/www/html/sun.png",
+	//circleShape: "/var/www/html/sun.png",
+	startAngle: 315,
+	tooltipFormat: "changeTooltip",		//RICHIAMA LA FUNZIONE PER MOSTARE IL TESTO DENTO IL WIDGET
+	change: function (args) {		//CHANGE CHE IMPOSTA L'ULTIMO VALORE
+                console.log(args.value);
+		var log = args.value;
+		window.location = 'pagina.php?log=' + log;
+         }
+
+});
+
+
+function changeTooltip(e) {
+    var val = e.value, speed, temperatura, stato, data;
+	temperatura=<?php echo round($temperatura,1) ?>;
+	data= new String("<?php echo $data ?>");
+	stato= new String ("<?php echo $stato ?>");
+	altitudine=<?php echo $altitudine?>;
+	pressione=<?php echo $pressione?>;
+	speed=<?php echo $termostato?>;
+	var valore;
+	if(val!= <?php echo $termostato ?>)
+	{
+		//speed=val;
+	}
+   return "<div id='js_temp'>" +"<span style='font-size:50px' margin-left='-22px'>"+ temperatura +" °C  </span>"+ "<img id='termometro' src='term.png'>" +"<div>"+ "<span id='data'>"+data+"</span>"+"<span id='orologio'/>"+"</div>" + "</div>" +"<div id='js_termostato'>"+"<span style='font-size:15px'>" +"Termostato: "+ val + " °C"+"</span>"+"</div>"  +stato+"<div>"+ "Altitudine: " +altitudine + " m  Pressione: " + pressione + " hPa </div>";
+}
+
+//FUZIONE PER OROLOGIO
+window.onload = function(){clock()};
+	function clock()
+	{
+        	// creiamo l'oggetto data
+        	var data = new Date();
+		// recuperiamo l'ora corrente
+		var ora = data.getHours();
+		// recuperiamo i minuti attuali
+		var min = data.getMinutes();
+		// recuperiamo i secondi attuali
+		var sec = data.getSeconds();
+		// formattiamo i minuti
+		if (min < 10)
+		{
+            		min = "0" + min;
+        	}
+		// prepariamo l'output
+		var output = ora + ":" + min + ":"+ sec;
+		// scriviamo l'ora nell'elemento
+		document.getElementById("orologio").innerHTML = output;
+		// richiamiamo la funione tra un secondo
+		setTimeout("clock()",1000);
+	}
+
+
+
+
+
+
+
+//data asse delle Y, temperatura(js_array) asse delle X
+var js_date = new Array("<?= join('", "', $datej) ?>");
+var js_array = new Array("<?= join('", "', $array) ?>");
+var js_termostato =  new Array("<?= join('", "', $termostatoj) ?>");
+
+function myFunction()
+{
+	var ctx = document.getElementById("myChart");
+	var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+				labels: js_date,
+				datasets: [{
+						label:"Temperatura",
+                                		data:js_array,
+						borderColor: "#3e95cd",
+						fill: false
+                        		   },
+				   	   {
+                                                label:"Termostato",
+                                                data:js_termostato,
+                                                borderColor: "#c92222b3",
+                                                fill: false
+                                           }
+
+
+			]
+                      }
+                });
+}
+
+
+function mycolor()
+{
+	var colore = <?php echo $stato ?>;
+	if(colore == 1)
+	{
+		$(".rs-bg-color").addClass("ac-color");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+<div>
+        <canvas id="myChart" width="1600" height="900"></canvas>
+</div>
+

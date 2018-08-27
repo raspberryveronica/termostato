@@ -1,0 +1,58 @@
+.numericButton
+{
+    background-color: #FFFFFF;
+    color: #666666;
+    border: 1px solid #C9C9C9;
+    display: inline-block;
+    height: 15px;
+    line-height: 14px;
+    min-width: 14px !important;
+    padding: 4px;
+    text-align: center;
+    text-decoration: none;
+}
+.currentPageButton
+{
+    background-color: #686868;
+    color: #fff !important;
+    border: 1px solid #C9C9C9;
+    display: inline-block;
+    height: 15px;
+    line-height: 14px;
+    min-width: 14px !important;
+    padding: 4px;
+    text-align: center;
+    text-decoration: none;
+}
+.nextbutton {
+    background-color: #FFFFFF;
+    border: 1px solid #C9C9C9;
+    color: #666666 !important;
+    display: inline-block;
+    height: 15px;
+    line-height: 14px;
+    padding: 4px;
+    text-align: center;
+    text-decoration: none;
+    width: 55px;
+}
+#page_navigation{
+    padding-top:8px;
+	float: right;
+}
+
+
+table, td, th {    
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 8px;
+}
+

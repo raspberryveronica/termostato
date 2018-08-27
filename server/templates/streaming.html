@@ -1,0 +1,80 @@
+<link rel="stylesheet" href="/static/style_streaming.css" type="text/css">
+<html>
+<head>
+	<title>Video Streaming</title>
+</head>
+<body>
+	<ul>
+		<li><a href='http://192.168.0.47/pagina.php' target=”_blank”>Termostato</a></li>
+		<li><a href="">Pagina1</a></li>
+		<li  style="float:right" ><a class="active" href='/logout'>Logout</a></li>
+	</ul> 
+	<h1>Video Streaming</h1>
+	<table class="all_table">
+		<tr><td class="video">
+			<img src="{{ url_for('video_feed') }}" width="400px" height="300px" border="0" hspace="2">
+			<img src="{{ url_for('video_feed2') }}" width="400px" height="300px" border="0" hspace="2">
+			<div class="bottom">
+				<div id="orologio" class="bottom-text"></div>
+				<div id="orologio2" class="bottom-text"></div>
+			</div>
+		</td>
+		<td>	
+			<table class="data_table">
+				<caption>Ultima rilevazione:</caption>
+				{% for row in results %}
+				<tr class="dati"><th class="dati2">Data:</th><td class="dati2">{{ row[0] }}</td></tr>
+ 				<tr class="dati"><th class="dati2">Ora:</th><td class="dati2">{{ row[1] }}</td></tr>
+  				<tr class="dati"><th class="dati2">Temperatura:</th><td class="dati2">{{ row[3] }}</td></tr>
+				<tr class="dati"><th class="dati2">Termostato:</th><td class="dati2">{{ row[4] }}</td></tr>
+				<tr class="dati"><th class="dati2">Pressione:</th><td class="dati2">{{ row[5] }}</td></tr>
+				<tr class="dati"><th class="dati2">Altitudine:</th><td class="dati2">{{ row[6] }}</td></tr>
+				{% endfor %}
+			</table>
+		</td></tr>
+	</table>
+
+
+
+<script>
+
+window.onload = function(){clock()};
+	function clock()
+	{
+        	// creiamo l'oggetto data
+        	var data = new Date();
+		// recuperiamo l'ora corrente
+		var ora = data.getHours();
+		// recuperiamo i minuti attuali
+		var min = data.getMinutes();
+		// recuperiamo i secondi attuali
+		var sec = data.getSeconds();
+		// formattiamo i minuti
+		if (min < 10)
+		{
+            		min = "0" + min;
+        	}
+
+        	var gg = data.getDate() + "/";
+        	var mm = data.getMonth() + 1 + "/";
+        	var aaaa = data.getFullYear();
+		var stringa1 = new String(" -- Telecamera Ufficio 1 --");
+		var stringa2 = new String(" -- Telecamera Ufficio 2 --");
+		// prepariamo l'output
+		var output1 ="Sono le "+ "<strong>"+ora + ":" + min + ":"+ sec + "</strong>" + " Del " + "<strong>" +gg + mm + aaaa+"</strong>"+ stringa1;
+		var output2 ="Sono le "+ "<strong>"+ora + ":" + min + ":"+ sec + "</strong>" + " Del " + "<strong>" +gg + mm +  aaaa+"</strong>"+ stringa2;
+
+		// scriviamo l'ora nell'elemento
+		document.getElementById("orologio").innerHTML = output1;
+		document.getElementById("orologio2").innerHTML = output2;
+		// richiamiamo la funione tra un secondo
+		setTimeout("clock()",1000);
+	}
+
+
+</script>
+
+
+</body>
+</html>
+
