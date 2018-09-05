@@ -29,7 +29,7 @@ app = Flask(__name__)
 db = pymysql.connect("localhost","monitor", "password", "temps")
 
 
-class Camera2(object):
+class camera2(object):
   def __init__(self):
     self.cap = cv2.VideoCapture(0)
 
@@ -37,7 +37,6 @@ class Camera2(object):
     ret, frame = self.cap.read()
     cv2.imwrite('stream.jpg',frame)
     return open('stream.jpg', 'rb').read()
-
 
 
 
@@ -51,15 +50,14 @@ def gen(camera2):
 
 @app.route('/video_feed2')
 def video_feed2():
-  return Response(gen(Camera2()),
-    mimetype='multipart/x-mixed-replace;boundary=frame') 
-
+  return Response(gen(camera2()),
+    mimetype='multipart/x-mixed-replace;boundary=frame')
 
 
 @app.route('/')
 def home():
     if not session.get('logged_in'):
-	  return render_template('login.html')
+     return render_template('login.html')
     else:
 	  #pirPin = 26
 	  #GPIO.setup(pirPin, GPIO.IN)
@@ -76,11 +74,11 @@ def home():
       	 #	     GPIO.setup(27, GPIO.OUT)
         #	     GPIO.output(27, GPIO.LOW)
 
-	  cursor = db.cursor()
-   	  sql = "SELECT * FROM tempdat ORDER BY tdate DESC, ttime DESC LIMIT 1"
-    	  cursor.execute(sql)
-     	  results = cursor.fetchall()
-	  return render_template('streaming.html', results=results)
+     cursor = db.cursor()
+     sql = "SELECT * FROM tempdat ORDER BY tdate DESC, ttime DESC LIMIT 1"
+     cursor.execute(sql)
+     results = cursor.fetchall()
+     return render_template('streaming.html', results=results)
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
@@ -110,8 +108,8 @@ def logout():
 def gen(camera):
     """Video streaming generator function."""
     while True:
-	frame = camera.get_frame()
-        yield (b'--frame\r\n'
+     frame = camera.get_frame()
+     yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 

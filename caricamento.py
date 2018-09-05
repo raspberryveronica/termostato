@@ -69,7 +69,7 @@ def read_temp():
         #print "Error: the database is being rolled back"
         #db.rollback()
 	#CREA IL PRIMO VALORE (DI DEFAULT) NEL CASO IN CUI IL DATABASE SIA VUOTO
-	curs.execute ("""INSERT INTO tempdat values(CURRENT_DATE(), NOW() , 'prova', %s,100,100,100)""",(temp_c,))
+	curs.execute ("""INSERT INTO tempdat values(CURRENT_DATE(), NOW() , 'prova', %s,100,12,100)""",(temp_c,))
 	db.commit()
 
     curs.execute
